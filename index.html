@@ -417,6 +417,16 @@ td.hi{background:#FEF3C7;font-weight:800}
 .fend{align-self:flex-end;border:0;background:none;color:var(--rc);font:800 13px var(--display);padding:2px 0;cursor:pointer}
 #v-ly-thuyet .card{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 130px)}
 .fbody{display:flex;flex-direction:column;gap:10px}
+
+.vidcard{display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--ink);background:#fff;border:2px solid #FCA5A5;border-radius:18px;padding:12px 14px;box-shadow:0 6px 16px #DC262622}
+.vidcard:active{transform:scale(.98)}
+.vplay{flex:none;width:64px;height:46px;border-radius:14px;background:linear-gradient(135deg,#EF4444,#B91C1C);display:grid;place-items:center;box-shadow:0 4px 10px #B91C1C55;animation:vpulse 1.8s ease-out infinite}
+.vplay span{width:0;height:0;border-left:18px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:4px}
+.vtx{display:flex;flex-direction:column;gap:3px;min-width:0}
+.vtx b{font:800 16px var(--display);color:#B91C1C}
+.vtx>span{font-size:13.5px;line-height:1.4}
+.vlink{font:800 14px var(--display);color:#DC2626}.vlink small{font:500 12px var(--body);color:var(--ink2);margin-left:4px;user-select:all}
+@keyframes vpulse{0%{box-shadow:0 0 0 0 #EF444477}70%{box-shadow:0 0 0 12px #EF444400}100%{box-shadow:0 0 0 0 #EF444400}}
 /* chỉ đường đến menu chọn */
 .gd{display:flex;align-items:center;gap:8px;margin:2px 0 1px;font:800 13px var(--display);color:#EA580C}
 .gd .gdt{background:#FFEDD5;border:1.5px solid #FDBA74;border-radius:999px;padding:1px 10px}
@@ -521,6 +531,10 @@ mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;max-width:100%}
   <div class="hero"><span class="ey">Bài thí nghiệm · TN Quá trình &amp; Thiết bị</span><h1>Mạch lưu chất</h1>
     <p>Nước chảy qua ba ống Ø30/34, Ø23/27, Ø17/21, qua ventury, màng chắn và van. Tìm <i>C</i><sub>m</sub>, <i>C</i><sub>v</sub>, hệ số ma sát λ và chiều dài tương đương <i>L</i><sub>tđ</sub> của van V5.</p>
     <div class="row"><span class="tag" style="--tc:#ffffff33">CLO1 xử lý số liệu</span><span class="tag" style="--tc:#ffffff33">CLO2 vận hành an toàn</span><span class="tag" style="--tc:#ffffff33">CLO3 làm việc nhóm</span></div></div>
+  <a class="vidcard" href="https://youtu.be/dzr3wca13bM" target="_blank" rel="noopener">
+    <span class="vplay" aria-hidden="true"><span></span></span>
+    <span class="vtx"><b>🎬 Video hướng dẫn sử dụng app</b><span>Cô Hà hướng dẫn cách sử dụng app. Các em xem trước khi bắt đầu.</span><span class="vlink">Xem trên YouTube ↗ <small>youtu.be/dzr3wca13bM</small></span></span>
+  </a>
   <div class="tiles" id="route-cards"></div>
   <div class="card cc"><h2>Sáu thí nghiệm trên cùng một thiết bị</h2><div class="tncards" id="tn-table"></div>
 </div>
