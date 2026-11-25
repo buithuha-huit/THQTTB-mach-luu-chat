@@ -264,12 +264,15 @@ details summary{cursor:pointer;font-weight:800;color:var(--rc)}
 .qslide input{width:100%;accent-color:var(--rc)}
 .qbub{position:absolute;top:0;transform:translateX(-50%);background:linear-gradient(120deg,var(--rc),var(--rc2));color:#fff;border-radius:12px;padding:3px 12px;font:900 17px var(--display);white-space:nowrap;box-shadow:0 4px 10px #0002;font-variant-numeric:tabular-nums}
 .qbub::after{content:"";position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--rc2);border-bottom:0}
-.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
-.rt{border-radius:14px;padding:8px 12px;background:color-mix(in srgb,var(--tc) 10%,#fff);border:2px solid color-mix(in srgb,var(--tc) 35%,#fff);display:flex;flex-direction:column;gap:2px}
-.rt small{font:800 12.5px var(--display);color:var(--tc)}
-.rt b{font:900 24px/1.15 var(--display);color:var(--ink);font-variant-numeric:tabular-nums}
-.rt b.chip{font-size:18px;color:#fff;background:var(--tc);border-radius:10px;padding:2px 10px;align-self:flex-start}
-.rt .fm{font-size:13px;color:var(--ink2)}
+.res{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.res .rt:last-child:nth-child(odd){grid-column:1/-1}
+.rt{min-width:0;border-radius:12px;padding:6px 10px;background:color-mix(in srgb,var(--tc) 10%,#fff);border:1.5px solid color-mix(in srgb,var(--tc) 35%,#fff);display:flex;flex-direction:column;gap:1px}
+.rt small{font:800 11.5px/1.25 var(--display);color:var(--tc)}
+.rt b{font:900 17px/1.2 var(--display);color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.rt b.chip{font-size:13px;color:#fff;background:var(--tc);border-radius:8px;padding:1px 8px;align-self:flex-start}
+.rt .fm{font-size:11.5px;line-height:1.3;color:var(--ink2);overflow-x:auto}
+.rt .fm mjx-container{font-size:92%!important;margin:0!important}
+@media (min-width:640px){.res{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}.res .rt:last-child:nth-child(odd){grid-column:auto}.rt b{font-size:21px}.rt b.chip{font-size:15px}.rt small{font-size:12.5px}.rt .fm{font-size:13px}}
 .rt.pulse b{animation:bump .5s ease}
 .cap{background:var(--soft);border-radius:12px;padding:8px 12px;font-size:14px}
 .sit{border:2px solid color-mix(in srgb,var(--rc) 30%,#fff);border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;background:#fff}
@@ -954,7 +957,7 @@ function updLab(){const d=+$('#lab-d').value/1000,inp=$('#lab-q'),Ql=+inp.value,
   const reg=Re<=2320?['Chảy tầng','#F59E0B']:Re<1e4?['Chảy quá độ','#8B5CF6']:['Chảy rối','#2563EB'];
   if(!LAB_INIT){$('#lab-out').innerHTML=`<div class="rt" style="--tc:#0D9488"><small>Vận tốc ω</small><b id="r-om"></b><span class="fm">\\(\\omega=4Q/(\\pi d^2)\\)</span></div><div class="rt" style="--tc:#2563EB"><small>Chuẩn số Re</small><b id="r-re"></b><span class="fm">\\(\\mathrm{Re}=\\omega d\\rho/\\mu\\)</span></div><div class="rt" style="--tc:#7C3AED"><small>Chế độ chảy</small><b class="chip" id="r-reg"></b><span class="fm">mốc Re = 2320</span></div><div class="rt" style="--tc:#DB2777"><small>Hệ số ma sát λ</small><b id="r-lam"></b><span class="fm" id="r-lamf"></span></div><div class="rt" style="--tc:#EA580C"><small>Tổn thất trên 1,2 m</small><b id="r-h"></b><span class="fm">\\(H_\\mathrm{f}=\\lambda\\frac{L}{d}\\frac{\\omega^2}{2g}\\)</span></div>`;LAB_INIT=true;typeset($('#lab-out'));}
   const set=(id,v)=>{const e=$('#'+id);if(e.textContent!==v){e.textContent=v;const p=e.parentElement;p.classList.remove('pulse');void p.offsetWidth;p.classList.add('pulse');}};
-  set('r-om',fmtT(om,3)+' m/s');set('r-re',fmtT(Re,4).replace(/\u202f/g,' '));set('r-reg',reg[0]);$('#r-reg').style.background=reg[1];set('r-lam',fmtT(lam,3));$('#r-lamf').textContent=Re<=2320?'64/Re':Re<1e5?'Blasius 0,3164/Re^0,25':'1/(1,8 lgRe − 1,5)²';set('r-h',fmtT(H*1000,3)+' mmH₂O');
+  set('r-om',fmtT(om,3)+' m/s');set('r-re',fmtT(Re,4).replace(/\u202f/g,' '));set('r-reg',reg[0]);$('#r-reg').style.background=reg[1];set('r-lam',fmtT(lam,3));$('#r-lamf').innerHTML=Re<=2320?'λ = 64/Re':Re<1e5?'Blasius: λ = 0,3164/Re<sup>0,25</sup>':'λ = 1/(1,8 lgRe − 1,5)²';set('r-h',fmtT(H*1000,3)+' mmH₂O');
   logChart($('#lab-chart'),{x0:500,x1:2e5,y0:0.01,y1:0.15,xl:'Re',yl:'λ',curves:[{f:x=>64/x,to:2320,col:'#F59E0B'},{f:x=>0.3164/x**0.25,from:2320,to:1e5,col:'#2563EB'},{f:x=>1/(1.8*Math.log10(x)-1.5)**2,from:1e5,col:'#2563EB',dash:1}],
     vlines:[{x:2320,col:'#7C3AED',t:'Re = 2320'}],labels:[{x:700,y:0.11,t:'chảy tầng: 64/Re',col:'#B45309'},{x:9000,y:0.04,t:'chảy rối ống trơn',col:'#1D4ED8'},{x:Re,y:lam*1.32,t:'ống đang chọn',col:'#0369A1',a:'middle'}],pts:[{x:Re,y:lam,col:'#0EA5E9',r:8}]});}
 function updPP(){const inp=$('#pp-q'),Ql=+inp.value;bubble(inp,$('#pp-qv'),'Q = '+Ql+' L/min');const Q=Ql/60000;const dv=(Q/(0.97*K_FM))**2*1000,dm=(Q/(0.62*K_FM))**2*1000;
@@ -1148,7 +1151,7 @@ function qzAnswer(q){let ok=false;const A='#qz-area';
   renderQ();}
 /* ---- gửi điểm về Google Sheet (cùng cơ chế game KTPU) ---- */
 const QP=new URLSearchParams(location.search);
-const GS_URL='https://script.google.com/macros/s/AKfycbw9J5bx5x6UhP26abUrmKzSHryfJ8UZ1-g-JCUsqzXwZHKlVYzWUcN-g2oVEu8jRslsLw/exec';
+const GS_URL='https://script.google.com/macros/s/AKfycbx02WF78p3ehyeki3pekVmooSr99Fw13DF1y22MxEApQx55gdFY/exec';   /* Google Sheet "THQTTB - điểm chuan bi" */
 const NHA_ID=(QP.get('nha')||'').trim(),BAI=(QP.get('bai')||'').trim();
 const GS=/^https:\/\/script\.google(usercontent)?\.com\//.test(NHA_ID)?NHA_ID:NHA_ID.length>20?`https://script.google.com/macros/s/${NHA_ID}/exec`:GS_URL;
 const LOPB=(BAI.match(/^[^_]+_([^_]+)_/)||[])[1]||'';
@@ -1163,7 +1166,7 @@ function qzEnd(){const ok=QZ.list.filter(q=>q.ok).length,n=QZ.list.length;const 
   let gs='';
   if(QZ.mode!=='prep')sendAct('luyen','Câu hỏi – '+MODES[QZ.mode],n,ok);
   if(QZ.mode==='prep'){const id=studentId();const p={game:GAME,bai:BAI,mssv:id.m,ten:id.n,lop:id.l||'',vn:1,vong:MODES.prep,tong:n,xong:n,dung:ok,sai:n-ok,tile:Math.round(pct*100),diem:Math.round(pct*100)/10,phut:Math.round((Date.now()-QZ.t0)/6000)/10};
-    p.ma=hsh([p.mssv,p.vn,p.xong,p.dung,p.sai,p.diem,BAI,QZ.t0].join('|'));const H=store.get('hist',[]);H.unshift({...p,t:Date.now(),sent:0});store.set('hist',H.slice(0,20));gs='<div class="gsbox wait" id="gs">⏳ Đang gửi điểm cho giảng viên…</div>';setTimeout(flush,50);}
+    p.ma=hsh([p.mssv,p.vn,p.xong,p.dung,p.sai,p.diem,BAI].join('|'));const H=store.get('hist',[]);H.unshift({...p,t:Date.now(),sent:0});store.set('hist',H.slice(0,20));gs='<div class="gsbox wait" id="gs">⏳ Đang gửi điểm cho giảng viên…</div>';setTimeout(flush,50);}
   $('#qz-box').innerHTML=`<div class="kq"><div class="stars">${[0,1,2].map(i=>`<span class="${i<stars?'on':''}" style="--d:${.2+i*.25}s">★</span>`).join('')}</div>
     <p class="kmsg">${pct>=0.8?'Đạt yêu cầu chuẩn bị bài!':pct>=0.5?'Khá rồi, cố thêm chút nữa!':'Ôn lại Lý thuyết và Thiết bị rồi thử lại nhé!'}</p>
     <div class="stats"><div class="t-ok"><b>${ok}</b><span>câu đúng</span></div><div class="t-bad"><b>${n-ok}</b><span>câu sai</span></div><div class="t-xp"><b>${QZ.mode==='prep'?fmt(pct*10,2):'+'+xp}</b><span>${QZ.mode==='prep'?'điểm /10':'XP'}</span></div></div>${gs}
@@ -1175,8 +1178,8 @@ let FL=false;
 const ACTN={sim:2,xl:3,luyen:4,h1:5,hunt:6};
 function sendAct(kind,vong,tong,dung,once){const id=studentId();if(!id||!NHA_ID)return;   /* chỉ ghi khi mở từ link giao bài */
   const A=store.get('actq',[]);if(once&&A.some(x=>x.once===once))return;
-  const p={game:GAME+' – Hoạt động',bai:BAI,mssv:id.m,ten:id.n,lop:id.l||'',vn:ACTN[kind],vong,tong,xong:tong,dung,sai:tong-dung,tile:tong?Math.round(dung/tong*100):'',diem:'',phut:''};
-  p.ma=hsh([p.mssv,p.vong,p.dung,p.tong,BAI,Date.now()].join('|'));A.unshift({...p,t:Date.now(),sent:0,once:once||''});store.set('actq',A.slice(0,60));setTimeout(flush,50);}
+  const p={game:GAME,bai:BAI,mssv:id.m,ten:id.n,lop:id.l||'',vn:ACTN[kind],vong,tong,xong:tong,dung,sai:tong-dung,tile:tong?Math.round(dung/tong*100):'',diem:'',phut:''};
+  p.ma=hsh([p.mssv,p.vn,p.xong,p.dung,p.sai,p.diem,BAI].join('|'));A.unshift({...p,t:Date.now(),sent:0,once:once||''});store.set('actq',A.slice(0,60));setTimeout(flush,50);}
 async function postGS(body){await fetch(GS,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});}
 async function flush(){if(FL)return;const H=store.get('hist',[]),A=store.get('actq',[]);const pend=[...H.filter(x=>!x.sent).map(x=>[x,'hist',H]),...A.filter(x=>!x.sent).map(x=>[x,'actq',A])];
   if(!pend.length){paintGS();return;}FL=true;paintGS();
@@ -1227,7 +1230,7 @@ function renderNV(){const id=studentId();if(!$('#nv-lop'))$('#nv-lopw').insertAd
 
 /* ===================== GIẢNG VIÊN ===================== */
 function gvInit(){$('#gv-tn2').innerHTML=Object.keys(TN).map(k=>`<option value="${k}">${TN[k].name}</option>`).join('');$('#gv-tn2').value=2;
-  $('#gv-gs').innerHTML='Điểm Chuẩn bị bài ghi vào trang tính “TN QTTB – Mạch lưu chất”; 5 hoạt động luyện tập (vận hành ảo, xử lý số liệu, câu hỏi luyện tập, tình huống Hình 1, truy tìm thiết bị) ghi vào trang “TN QTTB – Mạch lưu chất – Hoạt động”. Mỗi dòng gồm: game, bai, mssv, ten, lop, vong, tong, xong, dung, sai, tile, diem, phut, ma. Bỏ trống ô Apps Script thì app gửi về Apps Script mặc định đang gắn sẵn.';
+  $('#gv-gs').innerHTML='Cách dễ nhất: tạo link ở trang “Giao bài” của Google Sheet TN QTTB (giống sheet KTPU chuyên cần). Mọi lượt nộp ghi vào trang “Nhật ký”: Chuẩn bị bài là vòng 1; vận hành ảo, xử lý số liệu, câu hỏi luyện tập, tình huống Hình 1, truy tìm thiết bị là vòng 2–6. Mỗi dòng gồm: game, bai, mssv, ten, lop, vong, tong, xong, dung, sai, tile, diem, phut, ma. Bỏ trống ô Apps Script thì app gửi về Apps Script mặc định đang gắn sẵn.';
   try{const s=store.get('gvcfg',{});['base','exec','bai','lops'].forEach(k=>{if(s[k])$('#gv-'+k).value=s[k];});}catch(_){}
   $('#gv-mk').onclick=()=>{const base=$('#gv-base').value.trim(),ex=$('#gv-exec').value.trim(),bai=$('#gv-bai').value.trim().replace(/\s+/g,''),nq=$('#gv-n').value;
     if(!/^https:\/\//.test(base)){$('#gv-cfb').textContent='Nhập địa chỉ app trên GitHub Pages (bắt đầu bằng https://).';return;}
