@@ -1406,7 +1406,7 @@ function qzAnswer(q){let ok=false;const A='#qz-area';
   renderQ();}
 /* ---- gửi điểm về Google Sheet (cùng cơ chế game KTPU) ---- */
 const QP=new URLSearchParams(location.search);
-const GS_URL='https://script.google.com/macros/s/AKfycbx02WF78p3ehyeki3pekVmooSr99Fw13DF1y22MxEApQx55gdFY/exec';   /* Google Sheet "THQTTB - điểm chuan bi" */
+const GS_URL='https://script.google.com/macros/s/AKfycbxyh-Qg3LGgLNVIgNFdEq02vpa0nPkHZ8lXfI48TsNaGFKd8ov3Ovv1TeJBYGOHaW0Gig/exec';   /* Google Sheet "THQTTB - điểm chuan bi" */
 const NHA_ID=(QP.get('nha')||'').trim(),BAI=(QP.get('bai')||'').trim();
 const GS=/^https:\/\/script\.google(usercontent)?\.com\//.test(NHA_ID)?NHA_ID:NHA_ID.length>20?`https://script.google.com/macros/s/${NHA_ID}/exec`:GS_URL;
 const LOPB=(BAI.match(/^[^_]+_([^_]+)_/)||[])[1]||'';
@@ -1435,13 +1435,16 @@ function sendAct(kind,vong,tong,dung,once){const id=studentId();if(!id||!NHA_ID)
   const A=store.get('actq',[]);if(once&&A.some(x=>x.once===once))return;
   const p={game:GAME,bai:BAI,mssv:id.m,ten:id.n,lop:id.l||'',vn:ACTN[kind],vong,tong,xong:tong,dung,sai:tong-dung,tile:tong?Math.round(dung/tong*100):'',diem:'',phut:''};
   p.ma=hsh([p.mssv,p.vn,p.xong,p.dung,p.sai,p.diem,BAI].join('|'));A.unshift({...p,t:Date.now(),sent:0,once:once||''});store.set('actq',A.slice(0,60));setTimeout(flush,50);}
-async function postGS(body){await fetch(GS,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});}
+/* Gửi có đọc phản hồi: chỉ coi là đã gửi khi Google trả lời thành công (Apps Script trả phản hồi cho phép đọc từ trang khác) */
+async function postGS(body){const r=await fetch(GS,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body),redirect:'follow'});if(!r.ok)throw new Error('HTTP '+r.status);try{return await r.text();}catch(_){return '';}}
+/* Điểm "đã gửi" trước 27/11/2026 đi tới bản triển khai cũ đã ngừng: gửi lại một lần tới bản mới */
+(function(){for(const k of ['hist','actq']){const L=store.get(k,[]);let ch=false;L.forEach(p=>{if(p.sent&&!p.cf&&!p.mig){p.sent=0;p.mig=1;ch=true;}});if(ch)store.set(k,L);}})();
 async function flush(){if(FL)return;const H=store.get('hist',[]),A=store.get('actq',[]);const pend=[...H.filter(x=>!x.sent).map(x=>[x,'hist',H]),...A.filter(x=>!x.sent).map(x=>[x,'actq',A])];
   if(!pend.length){paintGS();return;}FL=true;paintGS();
-  for(const [p,key,L] of pend){const {t,sent,once,fail,...body}=p;try{await postGS(body);p.sent=Date.now();store.set(key,L);}catch(_){p.fail=1;store.set(key,L);break;}}
+  for(const [p,key,L] of pend){const {t,sent,once,fail,cf,mig,...body}=p;try{await postGS(body);p.sent=Date.now();p.cf=1;delete p.fail;store.set(key,L);}catch(_){p.fail=1;store.set(key,L);break;}}
   FL=false;paintGS();}
 function paintGS(){const b=$('#gs');const H=store.get('hist',[]);if(b&&H[0]){const p=H[0];b.className='gsbox '+(p.sent?'ok':FL?'wait':'bad');
-    b.innerHTML=p.sent?`✔ Đã gửi điểm cho giảng viên lúc ${new Date(p.sent).toLocaleString('vi-VN')} · mã xác nhận <code>${p.ma}</code>`:FL?'⏳ Đang gửi điểm cho giảng viên…':`Chưa gửi được (mất mạng hoặc em đang mở bản xem trước). Chụp màn hình mã <code>${p.ma}</code> gửi giảng viên. <button class="btn" id="gsre">↻ Gửi lại</button>`;
+    b.innerHTML=p.sent?`✔ Bảng điểm của giảng viên đã nhận lúc ${new Date(p.sent).toLocaleString('vi-VN')} · mã xác nhận <code>${p.ma}</code>`:FL?'⏳ Đang gửi điểm cho giảng viên…':`Chưa gửi được (mất mạng hoặc em đang mở bản xem trước). Chụp màn hình mã <code>${p.ma}</code> gửi giảng viên. <button class="btn" id="gsre">↻ Gửi lại</button>`;
     const r=$('#gsre');if(r)r.onclick=flush;}
   if(!$('#v-nhiem-vu').hidden)renderHist();}
 function renderHist(){const H=store.get('hist',[]);const el=$('#nv-hist');if(!el)return;
